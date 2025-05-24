@@ -85,17 +85,22 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     conn.commit()
     conn.close()
 
-    # ارسال برای ادمین
+    # ارسال برای ادمین (می‌تونی اینجا chat_id کانال رو جایگزین کنی بعداً)
+    caption = f"🆔 User ID: {user_id}\n"
     if username:
-        caption = f"🆔 User ID: {user_id}\n👤 Username: @{username}\n🕒 Time: {timestamp}"
-    else:
-        caption = f"🆔 User ID: {user_id}\n🕒 Time: {timestamp}"
+        caption += f"👤 Username: @{username}\n"
+    caption += f"🕒 Time: {timestamp}"
 
     with open(filepath, "rb") as f:
         await context.bot.send_photo(chat_id=ADMIN_ID, photo=f, caption=caption)
 
     # پیام به کاربر
     await update.message.reply_text("✅ رسید شما دریافت شد و پس از بررسی، توکن شما فعال می‌شود.")
+
+# گرفتن chat_id هرجا پیامی بیاد (مثلاً کانال)
+async def log_chat_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    chat = update.effective_chat
+    print(f"📡 Chat ID: {chat.id} | Type: {chat.type}")
 
 # دستور نمایش دیتابیس فقط برای ادمین
 async def show_db(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -124,12 +129,13 @@ async def show_db(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # راه‌اندازی ربات
 def main():
-    TOKEN = "7255395570:AAG8FH8CJRLZycXpsxSBcQlXaDS3NhBgKCY"
+    TOKEN = "توکن واقعی‌ات اینجا"
     app = Application.builder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("db", show_db))
     app.add_handler(MessageHandler(filters.PHOTO, handle_photo))
+    app.add_handler(MessageHandler(filters.ALL, log_chat_id))  # هندلر برای log آیدی کانال و غیره
 
     print("🤖 ربات فعال شد.")
     app.run_polling()
