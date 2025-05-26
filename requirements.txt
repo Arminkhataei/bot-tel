@@ -1,4 +1,8 @@
 python-telegram-bot==20.7
 aiohttp
 PyGithub
+pyTelegramBotAPI
+google-auth
+google-auth-oauthlib
+google-api-python-client
 
